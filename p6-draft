@@ -1,0 +1,99 @@
+
+from app import app
+import os
+import tkinter as tk
+from tkinter import ttk
+import threading
+import time
+#still havent finished the sound functionality 
+from playsound import playsound
+
+
+
+
+if __name__ == "__main__":
+    
+    os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
+    
+    app.run(debug="True", ssl_context='adhoc')
+    app.run(debug="True",use_reloader=True, ssl_context=('cert.pem', 'key.pem'))
+    root = tk.Tk()
+    app = MeditationApp(root)
+    root.mainloop()
+
+
+class MeditationApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("🧘 Meditation Timer")
+
+        self.is_running = False
+        self.music_on = False
+        self.remaining_seconds = 600  # 10 minutes
+
+        # Timer Display
+        self.timer_label = tk.Label(root, text="10:00", font=("Helvetica", 48))
+        self.timer_label.pack(pady=20)
+
+        # Progress Bar
+        self.progress = ttk.Progressbar(root, length=300, mode='determinate')
+        self.progress.pack(pady=10)
+
+        # Start Button
+        self.start_button = tk.Button(root, text="Start Meditation", command=self.start_timer)
+        self.start_button.pack(pady=10)
+
+        # Music Toggle
+        self.music_button = tk.Button(root, text="🔈 Music: OFF", command=self.toggle_music)
+        self.music_button.pack(pady=10)
+
+        # Music file (should be in the same directory)
+        self.music_file = "lofi.mp3"
+        self.music_thread = None
+
+    def toggle_music(self):
+        if not os.path.exists(self.music_file):
+            print(f"Music file '{self.music_file}' not found.")
+            return
+
+        self.music_on = not self.music_on
+        if self.music_on:
+            self.music_button.config(text="🔊 Music: ON")
+            self.music_thread = threading.Thread(target=self.play_music, daemon=True)
+            self.music_thread.start()
+        else:
+            self.music_button.config(text="🔈 Music: OFF")
+
+    def play_music(self):
+        while self.music_on:
+            playsound(self.music_file)
+
+    def start_timer(self):
+        if not self.is_running:
+            self.is_running = True
+            self.start_button.config(state=tk.DISABLED)
+            threading.Thread(target=self.run_timer, daemon=True).start()
+
+    def run_timer(self):
+        total = 600
+        while self.remaining_seconds > 0:
+            mins, secs = divmod(self.remaining_seconds, 60)
+            self.timer_label.config(text=f"{mins:02}:{secs:02}")
+            self.progress['value'] = ((total - self.remaining_seconds) / total) * 100
+            self.remaining_seconds -= 1
+            time.sleep(1)
+
+        self.timer_label.config(text="🧘 Done!")
+        self.is_running = False
+        self.start_button.config(state=tk.NORMAL)
+        self.remaining_seconds = 600  # Reset
+        self.progress['value'] = 0
+
+        # Stop music if playing
+        if self.music_on:
+            self.music_on = False
+            self.music_button.config(text="🔈 Music: OFF")
+
+# Launch the app
+#if __name__ == "__main__":
+    
