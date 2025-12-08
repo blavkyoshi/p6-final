@@ -1,6 +1,7 @@
 import greenfoot.*;
-import java.awt.*;
-
+//import java.awt.Font;
+//import greenfoot.Color;
+//import greenfoot.GreenfootImage;
 public class UIButton extends Actor {
 
     private String text;
@@ -21,7 +22,7 @@ public class UIButton extends Actor {
         img.setColor(color);
         img.fillRect(0, 0, img.getWidth(), img.getHeight());
         img.setColor(Color.BLACK);
-        img.setFont(new Font("Arial", Font.BOLD, fontSize));
+        img.setFont(new Font("Arial", fontSize));
         img.drawString(text, 10, fontSize);
         setImage(img);
     }
