@@ -1,5 +1,6 @@
 import greenfoot.*;   // (World, Actor, GreenfootImage, Greenfoot and GreenfootSound)
-import java.awt.*;
+//import java.awt.Label;
+
 
 public class MeditationWorld extends World {
 
@@ -20,10 +21,15 @@ public class MeditationWorld extends World {
     private String[] durations = {"5", "10", "15", "20", "30"};
     private int durationIndex = 1; // start with "10"
 
-    private GreenfootSound music = new GreenfootSound("lofi.mp3");
+    private GreenfootSound music = new GreenfootSound("lofi.wav");
 
     public MeditationWorld() {    
-        super(600, 400, 1);  // width, height, cell size
+        super(600, 400, 1);
+        GreenfootImage background = getBackground();
+        background.setColor(Color.BLACK);
+        background.fill();
+        createStars(300);
+        // width, height, cell size
 
         timerLabel = new Label("10:00", 60);
         addObject(timerLabel, 300, 80);
@@ -42,6 +48,17 @@ public class MeditationWorld extends World {
         statusLabel = new Label("Ready to meditate", 28);
         addObject(statusLabel, 300, 360);
     }
+    private void createStars(int number) 
+    {
+        GreenfootImage background = getBackground();             
+        for (int i=0; i < number; i++) {            
+            int x = Greenfoot.getRandomNumber( getWidth() );
+            int y = Greenfoot.getRandomNumber( getHeight() );
+            int color = 150 - Greenfoot.getRandomNumber(120);
+            background.setColorAt(x, y, new Color(color,color,color));
+        }
+    }
+    
 
     public void act() {
         handleDurationSelection();
